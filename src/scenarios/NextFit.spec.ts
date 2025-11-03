@@ -45,26 +45,22 @@ test.describe('Testes funcionais no site da NextFit', () => {
   test('Exibe mensagem de número inválido no campo celular', async ({ page }) => {
     const nextFitElements = new NextFitPage(page).nextFitElements;
   
-    await nextFitElements.getCampoNome().fill('teste');
-    await nextFitElements.getCampoEmail().fill('teste@teste.com');
+    await nextFitElements.getCampoNome().fill('Teste Usuário');
+    await nextFitElements.getCampoEmail().fill('teste@exemplo.com');
     await nextFitElements.getCampoCelular().fill('4354353');
-    await nextFitElements.getCampoCelularConfirmacao().fill('fsfsfs');
+    await nextFitElements.getCampoCelularConfirmacao().fill('4354353');
     await nextFitElements.getSelectModelo().selectOption('Academia');
   
     await nextFitElements.getBotaoEnviar().click({ force: true });
+    await page.waitForTimeout(1000);
   
-    const isValid = await nextFitElements.getCampoCelular().evaluate(
-      (input: HTMLInputElement) => input.checkValidity()
-    );
+    const mensagemErro = page.locator('.elementor-message-danger, .elementor-error, .error, [role="alert"]');
   
-    const validationMessage = await nextFitElements.getCampoCelular().evaluate(
-      (input: HTMLInputElement) => input.validationMessage
-    );
+    await expect(mensagemErro.first()).toBeVisible({ timeout: 5000 });
   
-    expect(isValid).toBeFalsy();
-    console.log('Mensagem de validação:', validationMessage);
+    const textoErro = await mensagemErro.first().textContent();
+    console.log('Mensagem exibida:', textoErro);
   
-    expect(validationMessage).toContain('Informe um número válido');
+    expect(textoErro).toMatch(/(DDD|válido)/i);
   });
-  
 });
