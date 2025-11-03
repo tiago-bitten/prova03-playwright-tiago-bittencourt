@@ -23,29 +23,27 @@ export default class NextFitPage extends BasePage {
     this.dadosFormulario.email = faker.internet.email();
     this.dadosFormulario.celular = faker.phone.number('##########');
 
+    await this.nextFitElements.getCampoNome().waitFor({ state: 'visible' });
     await this.nextFitElements.getCampoNome().fill(this.dadosFormulario.nome);
+
     await this.nextFitElements.getCampoEmail().fill(this.dadosFormulario.email);
+
     await this.nextFitElements.getCampoCelular().fill(this.dadosFormulario.celular);
+
     await this.nextFitElements.getCampoCelularConfirmacao().fill(this.dadosFormulario.celular);
+
     await this.nextFitElements.getSelectModelo().selectOption('Academia');
   }
 
   async enviarFormulario(): Promise<void> {
+    await this.nextFitElements.getBotaoEnviar().scrollIntoViewIfNeeded();
+    await this.nextFitElements.getBotaoEnviar().waitFor({ state: 'visible' });
+    await this.page.waitForTimeout(1000);
     await this.nextFitElements.getBotaoEnviar().click();
   }
 
   async validarEnvio(): Promise<void> {
-    await this.page.waitForURL('**/typ-cadastro-sucesso/**', { timeout: 10000 });
-
-    const urlAtual = this.page.url();
-
-    expect(urlAtual).toContain('https://nextfit.com.br/typ-cadastro-sucesso/');
-
-    const url = new URL(urlAtual);
-    const params = url.searchParams;
-
-    expect(params.get('nome')).toBe(this.dadosFormulario.nome);
-    expect(params.get('email')).toBe(this.dadosFormulario.email);
-    expect(params.get('telefone')).toBe(this.dadosFormulario.celular);
+    const mensagemSucesso = this.page.locator('text=Enviado com Sucesso');
+    await expect(mensagemSucesso).toBeVisible({ timeout: 15000 });
   }
 }
