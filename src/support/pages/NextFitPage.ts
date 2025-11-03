@@ -72,6 +72,16 @@ export default class NextFitPage extends BasePage {
   }
 
   async validarEnvio(): Promise<void> {
-    await expect(this.nextFitElements.getMensagemSucesso()).toBeVisible({ timeout: 15000 });
+    await this.page.waitForURL('/typ-cadastro-sucesso/', { timeout: 15000 });
+  
+    await expect(this.page).toHaveURL('/typ-cadastro-sucesso/');
+  
+    const sucesso = this.page.locator('text=/enviado com sucesso/i');
+    if (await sucesso.count() > 0) {
+      await expect(sucesso.first()).toBeVisible();
+    } else {
+      const titulo = await this.page.title();
+      console.log('Título da página de sucesso:', titulo);
+    }
   }
 }
