@@ -21,7 +21,7 @@ export default class NextFitPage extends BasePage {
   async preencherFormulario(): Promise<void> {
     this.dadosFormulario.nome = faker.person.fullName();
     this.dadosFormulario.email = faker.internet.email();
-    this.dadosFormulario.celular = faker.phone.number('##########');
+    this.dadosFormulario.celular = faker.phone.number('(##) #####-####');
 
     await this.nextFitElements.getCampoNome().waitFor({ state: 'visible' });
     await this.nextFitElements.getCampoNome().clear();
@@ -51,11 +51,45 @@ export default class NextFitPage extends BasePage {
     const isEnabled = await this.nextFitElements.getBotaoEnviar().isEnabled();
     console.log('Botão está habilitado:', isEnabled);
 
+    // Verificar se há mensagens de erro de validação na página
+    const errorMessages = await this.page.locator('.elementor-message-danger, .elementor-error, .error, [role="alert"]').count();
+    console.log('Mensagens de erro encontradas:', errorMessages);
+
+    if (errorMessages > 0) {
+      const errorTexts = await this.page.locator('.elementor-message-danger, .elementor-error, .error, [role="alert"]').allTextContents();
+      console.log('Textos de erro:', errorTexts);
+    }
+
     await this.page.waitForTimeout(1000);
-    await this.nextFitElements.getBotaoEnviar().click({ force: true });
+
+    // Tentar clicar no botão e aguardar possíveis mudanças
+    await Promise.race([
+      this.nextFitElements.getMensagemSucesso().waitFor({ state: 'visible', timeout: 5000 }),
+      this.nextFitElements.getBotaoEnviar().click({ force: true })
+    ]).catch(() => {
+      console.log('Clique executado, aguardando resposta...');
+    });
+
+    await this.page.waitForTimeout(2000);
   }
 
   async validarEnvio(): Promise<void> {
+    // Verificar se há mensagem de sucesso visível
+    const mensagemVisivel = await this.nextFitElements.getMensagemSucesso().isVisible().catch(() => false);
+
+    if (!mensagemVisivel) {
+      // Debug: capturar o HTML da página para entender o que está acontecendo
+      const pageContent = await this.page.content();
+      console.log('Página não redirecionou e mensagem não apareceu');
+
+      // Verificar se há erros de validação
+      const hasErrors = await this.page.locator('.elementor-message-danger, .elementor-error').count();
+      if (hasErrors > 0) {
+        const errors = await this.page.locator('.elementor-message-danger, .elementor-error').allTextContents();
+        console.log('Erros de validação encontrados:', errors);
+      }
+    }
+
     await expect(this.nextFitElements.getMensagemSucesso()).toBeVisible({ timeout: 15000 });
   }
 }
