@@ -8,26 +8,26 @@ export default class NextFitElements extends BaseElements {
   }
 
   getCampoNome(): Locator {
-    return this.page.locator('input[name="form_fields[name]"]');
+    return this.page.locator('input[name="form_fields[name]"]').first();
   }
 
   getCampoEmail(): Locator {
-    return this.page.locator('input[name="form_fields[email]"]');
+    return this.page.locator('input[name="form_fields[email]"]').first();
   }
 
   getCampoCelular(): Locator {
-    return this.page.locator('input[name="form_fields[celular]"]');
+    return this.page.locator('input[name="form_fields[celular]"]').first();
   }
 
   getCampoCelularConfirmacao(): Locator {
-    return this.page.locator('input[name="form_fields[celularconfimacao]"]');
+    return this.page.locator('input[name="form_fields[celularconfimacao]"]').first();
   }
 
   getSelectModelo(): Locator {
-    return this.page.locator('select[name="form_fields[modelo]"]');
+    return this.page.locator('select[name="form_fields[modelo]"]').first();
   }
 
   getBotaoEnviar(): Locator {
-    return this.page.locator('button[type="submit"].elementor-button.elementor-size-lg.elementor-animation-grow');
+    return this.page.locator('button[type="submit"].elementor-button.elementor-size-lg.elementor-animation-grow').first();
   }
 }
