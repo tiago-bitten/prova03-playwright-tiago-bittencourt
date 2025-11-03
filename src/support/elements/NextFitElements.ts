@@ -32,6 +32,6 @@ export default class NextFitElements extends BaseElements {
   }
 
   getMensagemSucesso(): Locator {
-    return this.page.locator('text=/enviado.*sucesso/i, .elementor-message-success, [role="alert"]:has-text("sucesso")').first();
+    return this.page.locator('.elementor-message-success, text=/enviado.*sucesso/i').first();
   }
 }
