@@ -30,4 +30,8 @@ export default class NextFitElements extends BaseElements {
   getBotaoEnviar(): Locator {
     return this.page.locator('button[type="submit"].elementor-button.elementor-size-lg.elementor-animation-grow').first();
   }
+
+  getMensagemSucesso(): Locator {
+    return this.page.locator('text=Enviado com Sucesso');
+  }
 }

@@ -24,26 +24,38 @@ export default class NextFitPage extends BasePage {
     this.dadosFormulario.celular = faker.phone.number('##########');
 
     await this.nextFitElements.getCampoNome().waitFor({ state: 'visible' });
+    await this.nextFitElements.getCampoNome().clear();
     await this.nextFitElements.getCampoNome().fill(this.dadosFormulario.nome);
+    await this.nextFitElements.getCampoNome().press('Tab');
 
+    await this.nextFitElements.getCampoEmail().clear();
     await this.nextFitElements.getCampoEmail().fill(this.dadosFormulario.email);
+    await this.nextFitElements.getCampoEmail().press('Tab');
 
+    await this.nextFitElements.getCampoCelular().clear();
     await this.nextFitElements.getCampoCelular().fill(this.dadosFormulario.celular);
+    await this.nextFitElements.getCampoCelular().press('Tab');
 
+    await this.nextFitElements.getCampoCelularConfirmacao().clear();
     await this.nextFitElements.getCampoCelularConfirmacao().fill(this.dadosFormulario.celular);
+    await this.nextFitElements.getCampoCelularConfirmacao().press('Tab');
 
     await this.nextFitElements.getSelectModelo().selectOption('Academia');
+    await this.page.waitForTimeout(500);
   }
 
   async enviarFormulario(): Promise<void> {
     await this.nextFitElements.getBotaoEnviar().scrollIntoViewIfNeeded();
     await this.nextFitElements.getBotaoEnviar().waitFor({ state: 'visible' });
+
+    const isEnabled = await this.nextFitElements.getBotaoEnviar().isEnabled();
+    console.log('Botão está habilitado:', isEnabled);
+
     await this.page.waitForTimeout(1000);
-    await this.nextFitElements.getBotaoEnviar().click();
+    await this.nextFitElements.getBotaoEnviar().click({ force: true });
   }
 
   async validarEnvio(): Promise<void> {
-    const mensagemSucesso = this.page.locator('text=Enviado com Sucesso');
-    await expect(mensagemSucesso).toBeVisible({ timeout: 15000 });
+    await expect(this.nextFitElements.getMensagemSucesso()).toBeVisible({ timeout: 15000 });
   }
 }
