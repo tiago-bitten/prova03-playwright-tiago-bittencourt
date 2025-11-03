@@ -75,15 +75,29 @@ export default class NextFitPage extends BasePage {
   }
 
   async validarEnvio(): Promise<void> {
+    await this.page.waitForTimeout(3000);
+
     const mensagemVisivel = await this.nextFitElements.getMensagemSucesso().isVisible().catch(() => false);
 
     if (!mensagemVisivel) {
       console.log('Página não redirecionou e mensagem não apareceu');
+      console.log('URL atual:', this.page.url());
+
+      const allMessages = await this.page.locator('.elementor-message, [class*="message"], [role="alert"]').allTextContents();
+      console.log('Todas as mensagens encontradas:', allMessages);
 
       const hasErrors = await this.page.locator('.elementor-message-danger, .elementor-error').count();
       if (hasErrors > 0) {
         const errors = await this.page.locator('.elementor-message-danger, .elementor-error').allTextContents();
         console.log('Erros de validação encontrados:', errors);
+      }
+
+      const successElements = await this.page.locator('text=/sucesso/i').count();
+      console.log('Elementos com texto "sucesso" encontrados:', successElements);
+
+      if (successElements > 0) {
+        const successTexts = await this.page.locator('text=/sucesso/i').allTextContents();
+        console.log('Textos de sucesso:', successTexts);
       }
     }
 
