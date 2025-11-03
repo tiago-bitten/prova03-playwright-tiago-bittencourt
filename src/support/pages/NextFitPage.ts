@@ -21,7 +21,6 @@ export default class NextFitPage extends BasePage {
   async preencherFormulario(): Promise<void> {
     this.dadosFormulario.nome = faker.person.fullName();
     this.dadosFormulario.email = faker.internet.email();
-    // Gerar celular apenas com números, sem formatação
     this.dadosFormulario.celular = '48999887766';
 
     await this.nextFitElements.getCampoNome().waitFor({ state: 'visible' });
