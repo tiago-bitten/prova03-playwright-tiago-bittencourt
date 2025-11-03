@@ -41,4 +41,30 @@ test.describe('Testes funcionais no site da NextFit', () => {
   
     console.log('Elemento em foco após envio inválido:', focusedElement);
   });
+
+  test('Exibe mensagem de número inválido no campo celular', async ({ page }) => {
+    const nextFitElements = new NextFitPage(page).nextFitElements;
+  
+    await nextFitElements.getCampoNome().fill('teste');
+    await nextFitElements.getCampoEmail().fill('teste@teste.com');
+    await nextFitElements.getCampoCelular().fill('4354353');
+    await nextFitElements.getCampoCelularConfirmacao().fill('fsfsfs');
+    await nextFitElements.getSelectModelo().selectOption('Academia');
+  
+    await nextFitElements.getBotaoEnviar().click({ force: true });
+  
+    const isValid = await nextFitElements.getCampoCelular().evaluate(
+      (input: HTMLInputElement) => input.checkValidity()
+    );
+  
+    const validationMessage = await nextFitElements.getCampoCelular().evaluate(
+      (input: HTMLInputElement) => input.validationMessage
+    );
+  
+    expect(isValid).toBeFalsy();
+    console.log('Mensagem de validação:', validationMessage);
+  
+    expect(validationMessage).toContain('Informe um número válido');
+  });
+  
 });
