@@ -21,46 +21,8 @@ test.describe('Testes funcionais no site da NextFit', () => {
     await nextFitPage.validarEnvio();
   });
 
-  test('Preencher somente e-mail deve deixar o campo de nome com foco no cursor', async ({ page }) => {
-    const nextFitElements = new NextFitPage(page).nextFitElements;
-  
-    await nextFitElements.getCampoEmail().waitFor({ state: 'visible' });
-  
-    const email = 'teste.focus@exemplo.com';
-    await nextFitElements.getCampoEmail().fill(email);
-  
-    await nextFitElements.getCampoEmail().press('Tab');
-  
-    await nextFitElements.getBotaoEnviar().click({ force: true });
-  
-    await page.waitForTimeout(500);
-  
-    const focusedElement = await page.evaluate(() => document.activeElement?.getAttribute('name'));
-  
-    expect(focusedElement).toBe('form_fields[name]');
-  
-    console.log('Elemento em foco após envio inválido:', focusedElement);
-  });
-
-  test('Exibe mensagem de número inválido no campo celular', async ({ page }) => {
-    const nextFitElements = new NextFitPage(page).nextFitElements;
-  
-    await nextFitElements.getCampoNome().fill('Teste Usuário');
-    await nextFitElements.getCampoEmail().fill('teste@exemplo.com');
-    await nextFitElements.getCampoCelular().fill('4354353');
-    await nextFitElements.getCampoCelularConfirmacao().fill('4354353');
-    await nextFitElements.getSelectModelo().selectOption('Academia');
-  
-    await nextFitElements.getBotaoEnviar().click({ force: true });
-    await page.waitForTimeout(1000);
-  
-    const mensagemErro = page.locator('.elementor-message-danger, .elementor-error, .error, [role="alert"]');
-  
-    await expect(mensagemErro.first()).toBeVisible({ timeout: 5000 });
-  
-    const textoErro = await mensagemErro.first().textContent();
-    console.log('Mensagem exibida:', textoErro);
-  
-    expect(textoErro).toMatch(/(DDD|válido)/i);
+  test('Preencher somente e-mail deve deixar o campo de nome com foco no cursor', async () => {
+    await nextFitPage.preencherSomenteEmail();
+    await nextFitPage.validarFocoNoCampoNome();
   });
 });

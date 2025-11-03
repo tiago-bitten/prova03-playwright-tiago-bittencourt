@@ -73,9 +73,9 @@ export default class NextFitPage extends BasePage {
 
   async validarEnvio(): Promise<void> {
     await this.page.waitForURL(/typ-cadastro-sucesso/, { timeout: 15000 });
-  
+
     await expect(this.page).toHaveURL(/typ-cadastro-sucesso/);
-  
+
     const sucesso = this.page.locator('text=/enviado com sucesso/i');
     if (await sucesso.count() > 0) {
       await expect(sucesso.first()).toBeVisible();
@@ -84,4 +84,23 @@ export default class NextFitPage extends BasePage {
       console.log('Título da página de sucesso:', titulo);
     }
   }
+
+  async preencherSomenteEmail(): Promise<void> {
+    await this.nextFitElements.getCampoEmail().waitFor({ state: 'visible' });
+
+    const email = 'teste.focus@exemplo.com';
+    await this.nextFitElements.getCampoEmail().fill(email);
+
+    await this.nextFitElements.getCampoEmail().press('Tab');
+    await this.nextFitElements.getBotaoEnviar().click({ force: true });
+
+    await this.page.waitForTimeout(500);
+  }
+
+  async validarFocoNoCampoNome(): Promise<void> {
+    const focusedElement = await this.page.evaluate(() => document.activeElement?.getAttribute('name'));
+    await expect(focusedElement).toBe('form_fields[name]');
+    console.log('Elemento em foco após envio inválido:', focusedElement);
+  }
+
 }
