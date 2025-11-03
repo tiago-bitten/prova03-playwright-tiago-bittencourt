@@ -21,7 +21,10 @@ export default class NextFitPage extends BasePage {
   async preencherFormulario(): Promise<void> {
     this.dadosFormulario.nome = faker.person.fullName();
     this.dadosFormulario.email = faker.internet.email();
-    this.dadosFormulario.celular = faker.phone.number('(##) #####-####');
+    const ddd = faker.string.numeric(2);
+    const parte1 = faker.string.numeric(5);
+    const parte2 = faker.string.numeric(4);
+    this.dadosFormulario.celular = `(${ddd}) ${parte1}-${parte2}`;
 
     await this.nextFitElements.getCampoNome().waitFor({ state: 'visible' });
     await this.nextFitElements.getCampoNome().clear();
@@ -51,7 +54,6 @@ export default class NextFitPage extends BasePage {
     const isEnabled = await this.nextFitElements.getBotaoEnviar().isEnabled();
     console.log('Botão está habilitado:', isEnabled);
 
-    // Verificar se há mensagens de erro de validação na página
     const errorMessages = await this.page.locator('.elementor-message-danger, .elementor-error, .error, [role="alert"]').count();
     console.log('Mensagens de erro encontradas:', errorMessages);
 
@@ -62,7 +64,6 @@ export default class NextFitPage extends BasePage {
 
     await this.page.waitForTimeout(1000);
 
-    // Tentar clicar no botão e aguardar possíveis mudanças
     await Promise.race([
       this.nextFitElements.getMensagemSucesso().waitFor({ state: 'visible', timeout: 5000 }),
       this.nextFitElements.getBotaoEnviar().click({ force: true })
@@ -74,15 +75,11 @@ export default class NextFitPage extends BasePage {
   }
 
   async validarEnvio(): Promise<void> {
-    // Verificar se há mensagem de sucesso visível
     const mensagemVisivel = await this.nextFitElements.getMensagemSucesso().isVisible().catch(() => false);
 
     if (!mensagemVisivel) {
-      // Debug: capturar o HTML da página para entender o que está acontecendo
-      const pageContent = await this.page.content();
       console.log('Página não redirecionou e mensagem não apareceu');
 
-      // Verificar se há erros de validação
       const hasErrors = await this.page.locator('.elementor-message-danger, .elementor-error').count();
       if (hasErrors > 0) {
         const errors = await this.page.locator('.elementor-message-danger, .elementor-error').allTextContents();
