@@ -72,9 +72,9 @@ export default class NextFitPage extends BasePage {
   }
 
   async validarEnvio(): Promise<void> {
-    await this.page.waitForURL('/typ-cadastro-sucesso/', { timeout: 15000 });
+    await this.page.waitForURL(/typ-cadastro-sucesso/, { timeout: 15000 });
   
-    await expect(this.page).toHaveURL('/typ-cadastro-sucesso/');
+    await expect(this.page).toHaveURL(/typ-cadastro-sucesso/);
   
     const sucesso = this.page.locator('text=/enviado com sucesso/i');
     if (await sucesso.count() > 0) {
